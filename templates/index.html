@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>服务器网口流量图</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        .error {
+            color: red;
+        }
+
+        .categories {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .category {
+            flex-basis: 30%;
+            text-align: center;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            background-color: lightgreen;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            color: #000;
+        }
+
+        .category.active {
+            background-color: darkgreen; /* Change the background color for active category */
+            color: #fff; /* Change the text color for active category */
+        }
+
+        .category:hover {
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .category:active {
+            transform: translateY(0);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 style="color: blue;">LiSuan Data Servers Network Usage</h1>
+    <form method="POST">
+        <label for="date">日期:</label>
+        <input type="date" id="date" name="date" value="{{ date|default(today) }}">
+        <input type="hidden" id="subdir" name="subdir" value="{{ subdir|default('dumpserver') }}">
+        <input type="submit" value="查询">
+    </form>
+    <div class="categories">
+        <div class="category {% if subdir == 'dumpserver' %}active{% endif %}" onclick="selectCategory('dumpserver')">dumpserver</div>
+        <div class="category {% if subdir == 'backend' %}active{% endif %}" onclick="selectCategory('backend')">backend</div>
+        <div class="category {% if subdir == 'frontend' %}active{% endif %}" onclick="selectCategory('frontend')">frontend</div>
+    </div>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% else %}
+        <div class="image-container">
+            <img class="plot-image" style="max-width: none;" src="data:image/png;base64,{{ plot_url }}" alt="">
+        </div>
+    {% endif %}
+</div>
+<script>
+    function selectCategory(category) {
+        document.getElementById('subdir').value = category;
+        document.querySelector('form').submit();
+    }
+</script>
+</body>
+</html>
+
